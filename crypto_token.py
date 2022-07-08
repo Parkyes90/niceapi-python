@@ -54,16 +54,19 @@ class CryptoToken:
     dataBody: CryptoTokenDataBody | str
 
 
-def get_crypto_token(access_token: str):
-    timestamp = int(time.time())
-    token = base64.b64encode(f"{access_token}:{timestamp}:{APP_ID}".encode()).decode()
-    authorization = f"bearer {token}"
-    # uuid의 length는 32 30으로 줄일 경우 충돌 확률 계산 필요
+def get_request_crypto_token_data():
     request_body = RequestCryptoTokenDataBody(
         req_no=str(uuid.uuid4()).replace("-", "")[:30], req_dtim="20220622162600"
     )
     request_header = RequestCryptoTokenDataHeader()
-    request_data = RequestCryptoToken(dataBody=request_body, dataHeader=request_header)
+    return RequestCryptoToken(dataBody=request_body, dataHeader=request_header)
+
+
+def get_crypto_token(access_token: str, request_data: RequestCryptoToken):
+    timestamp = int(time.time())
+    token = base64.b64encode(f"{access_token}:{timestamp}:{APP_ID}".encode()).decode()
+    authorization = f"bearer {token}"
+    # uuid의 length는 32 30으로 줄일 경우 충돌 확률 계산 필요
 
     response = requests.post(
         url=URL,
