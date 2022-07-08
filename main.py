@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from crypto_token import get_crypto_token
 from oauth_token import get_oauth_token
 
 app = FastAPI()
@@ -16,6 +17,9 @@ async def say_hello(name: str):
 
 
 if __name__ == "__main__":
-    # token = get_oauth_token()
-    # print(token)
-    pass
+    oauth_token = get_oauth_token()
+    if isinstance(oauth_token.dataBody, str):
+        crypto_token = get_crypto_token("dummy")
+    else:
+        crypto_token = get_crypto_token(oauth_token.dataBody.access_token)
+    print(crypto_token)
