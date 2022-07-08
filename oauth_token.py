@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import dacite
 import requests
 
+URL = "https://svc.niceapi.co.kr:22001/digital/niceid/oauth/oauth/token"
 APP_ID = "1234"
 APP_SECRET = "1234"
 
@@ -31,12 +32,11 @@ class OAuthToken:
 
 def get_oauth_token() -> OAuthToken:
     """기관 토큰 요청"""
-    url = "https://svc.niceapi.co.kr:22001/digital/niceid/oauth/oauth/token"
     authorization = (
         f"Basic {base64.b64encode(f'{APP_ID}:{APP_SECRET}'.encode()).decode()}"
     )
     response = requests.post(
-        url=url,
+        url=URL,
         data={"grant_type": "client_credentials", "scope": "default"},
         headers={
             "Authorization": authorization,
