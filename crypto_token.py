@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import dacite
 import requests
 
-from oauth_token import APP_ID
+from base import NICE_API_CLIENT_ID
 
 URL = "https://svc.niceapi.co.kr:22001/digital/niceid/api/v1.0/common/crypto/token"
 PRODUCT_ID = "232323"
@@ -64,7 +64,9 @@ def get_request_crypto_token_data():
 
 def get_crypto_token(access_token: str, request_data: RequestCryptoToken):
     timestamp = int(time.time())
-    token = base64.b64encode(f"{access_token}:{timestamp}:{APP_ID}".encode()).decode()
+    token = base64.b64encode(
+        f"{access_token}:{timestamp}:{NICE_API_CLIENT_ID}".encode()
+    ).decode()
     authorization = f"bearer {token}"
     # uuid의 length는 32 30으로 줄일 경우 충돌 확률 계산 필요
 
