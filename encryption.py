@@ -1,3 +1,4 @@
+import base64
 import dataclasses
 import json
 from dataclasses import dataclass
@@ -23,6 +24,10 @@ class RequestData:
     # receivedata 인증 후 전달받을 데이터 세팅
 
 
+def pad(s: str, bs):
+    return s + (bs - len(s) % bs) * chr(bs - len(s) % bs)
+
+
 def get_encrypted_data(
     symmetric_key: SymmetricKey, request_token: RequestCryptoToken, token: CryptoToken
 ):
@@ -31,6 +36,12 @@ def get_encrypted_data(
         returnurl="http://localhost:5000/niceapi/callback",
         sitecode=token.dataBody.site_code,
     )
-
+    bs = 16
     json_req_data = json.dumps(dataclasses.asdict(req_data))
-    cipher = AES.new(symmetric_key.key, AES.MODE_CBC, symmetric_key.iv)
+    input_data = pad(json_req_data, bs)
+    cipher = AES.new(
+        symmetric_key.key.encode(), AES.MODE_CBC, symmetric_key.iv.encode()
+    )
+    output = cipher.encrypt(input_data.strip().encode())
+    enc_data = base64.b64encode(output).decode()
+    return enc_data

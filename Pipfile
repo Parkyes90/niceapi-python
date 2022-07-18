@@ -8,7 +8,7 @@ fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 requests = "*"
 dacite = "*"
-pycrypto = "*"
+pycryptodome = "*"
 
 [dev-packages]
 
