@@ -4,6 +4,7 @@ import json
 import time
 from dataclasses import dataclass
 
+import dacite
 import requests
 
 from base import NICE_API_CLIENT_ID, NICE_API_IV_INTEGRATED_PRODUCT_CODE
@@ -40,18 +41,18 @@ class CryptoTokenDataHeader:
 @dataclass
 class CryptoTokenDataBody:
     rsp_cd: str  # dataBody 정상 처리 여부 P000 성공 이외 모두 오류
-    res_msg: str | None  # rsp_cd가 EAPI로 시작될 경우 오류 메시지
     result_cd: str  # rsp_cd가 P000일 때 상세 결과 코드
     site_code: str  # 사이트 코드
     token_version_id: str  # 서버 토큰 버전
     token_val: str  # 암복호화 위한 서버 토큰 값
-    period: int  # 토큰 만료까지 남은 period
+    period: float  # 토큰 만료까지 남은 period
+    res_msg: str | None = None  # rsp_cd가 EAPI로 시작될 경우 오류 메시지
 
 
 @dataclass
 class CryptoToken:
     dataHeader: CryptoTokenDataHeader
-    dataBody: CryptoTokenDataBody | str
+    dataBody: CryptoTokenDataBody
 
 
 def get_request_crypto_token_data():
@@ -75,6 +76,4 @@ def get_crypto_token(access_token: str, request_data: RequestCryptoToken):
             "client_id": NICE_API_CLIENT_ID,
         },
     )
-    print(response.json())
-
-    # return dacite.from_dict(data_class=CryptoToken, data=response.json())
+    return dacite.from_dict(data_class=CryptoToken, data=response.json())
