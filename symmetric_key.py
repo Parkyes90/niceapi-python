@@ -10,6 +10,7 @@ class SymmetricKey:
     key: str  # 데이터 암호화할 대칭키 Sha256 -> base64 encoding하여 앞에서부터 16 byte
     iv: str  # 데이터 암호화할 initial vector Sha256 -> base64 encoding하여 뒤에서부터 16 byte
     hmac_key: str  # 암호화 위변조 체크용 Sha256 -> base64 encoding하여 앞에서부터 32 byte
+    value: str
 
 
 def get_symmetric_key(
@@ -23,4 +24,6 @@ def get_symmetric_key(
 
     digest = hashlib.sha256(base.encode()).digest()
     result = base64.b64encode(digest).decode()
-    return SymmetricKey(key=result[:16], hmac_key=result[:32], iv=result[28:])
+    return SymmetricKey(
+        key=result[:16], hmac_key=result[:32], iv=result[28:], value=result
+    )
