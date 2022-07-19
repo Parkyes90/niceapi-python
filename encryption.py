@@ -4,6 +4,7 @@ import json
 from dataclasses import dataclass
 
 from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
 
 from crypto_token import RequestCryptoToken, CryptoToken
 from symmetric_key import SymmetricKey
@@ -24,8 +25,9 @@ class RequestData:
     # receivedata 인증 후 전달받을 데이터 세팅
 
 
-def pad(s: str, bs):
-    return s + (bs - len(s) % bs) * chr(bs - len(s) % bs)
+#
+# def pad(s: str, bs):
+#     return s + (bs - len(s) % bs) * chr(bs - len(s) % bs)
 
 
 def get_encrypted_data(
@@ -38,10 +40,11 @@ def get_encrypted_data(
     )
     bs = 16
     json_req_data = json.dumps(dataclasses.asdict(req_data))
-    input_data = pad(json_req_data, bs)
+    input_data = pad(json_req_data.encode(), bs)
     cipher = AES.new(
         symmetric_key.key.encode(), AES.MODE_CBC, symmetric_key.iv.encode()
     )
-    output = cipher.encrypt(input_data.strip().encode())
+
+    output = cipher.encrypt(input_data.strip())
     enc_data = base64.b64encode(output).decode()
     return enc_data

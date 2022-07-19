@@ -18,12 +18,17 @@ def get_symmetric_key(
 ):
     base = (
         f"{request_crypto_token_data.dataBody.req_dtim.strip()}"
-        f":{request_crypto_token_data.dataBody.req_no.strip()}"
-        f":{crypto_token.dataBody.token_val.strip()}"
+        f"{request_crypto_token_data.dataBody.req_no.strip()}"
+        f"{crypto_token.dataBody.token_val.strip()}"
     )
 
     digest = hashlib.sha256(base.encode()).digest()
     result = base64.b64encode(digest).decode()
-    return SymmetricKey(
-        key=result[:16], hmac_key=result[:32], iv=result[28:], value=result
+    sk = SymmetricKey(
+        key=result[:16],
+        hmac_key=result[:32],
+        iv=result[len(result) - 16 :],
+        value=result,
     )
+
+    return sk
